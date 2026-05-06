@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Harshit Edits - Video Editor for Creators & Brands</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090B;
+  --surface: #111113;
+  --surface2: #18181B;
+  --border: rgba(255,255,255,0.07);
+  --text: #FAFAFA;
+  --sub: #A1A1AA;
+  --muted: #52525B;
+  --green: #00E5A0;
+  --green-dim: rgba(0,229,160,0.12);
+  --green-glow: rgba(0,229,160,0.25);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  width: 10px; height: 10px;
+  background: var(--green);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.15s ease;
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(0,229,160,0.4);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transition: all 0.1s ease;
+}
+
+a, button { cursor: none; }
+
+/* NOISE TEXTURE OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.container { width: 90%; max-width: 1200px; margin: auto; }
+a { text-decoration: none; color: inherit; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  background: rgba(9,9,11,0.85);
+  backdrop-filter: blur(20px);
+  z-index: 1000;
+}
+nav .inner { display: flex; justify-content: space-between; align-items: center; }
+.logo {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.logo em { color: var(--green); font-style: normal; }
+.nav-links { display: flex; gap: 32px; font-size: 14px; color: var(--sub); }
+.nav-links a { transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--green);
+  color: #000;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+}
+.nav-cta:hover { background: #fff; transform: translateY(-1px); }
+
+/* HERO */
+.hero {
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 80px 0;
+}
+
+/* animated grid background */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,229,160,0.12) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 2; max-width: 780px; }
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--green-dim);
+  border: 1px solid rgba(0,229,160,0.2);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 100px;
+  margin-bottom: 28px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+.hero h1 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -3px;
+  margin-bottom: 24px;
+}
+.hero h1 .accent { color: var(--green); }
+.hero h1 .line2 { color: var(--muted); }
+
+.hero-sub {
+  font-size: 17px;
+  color: var(--sub);
+  line-height: 1.7;
+  max-width: 520px;
+  margin-bottom: 40px;
+  font-weight: 300;
+}
+
+.hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+
+.btn-primary {
+  background: var(--green);
+  color: #000;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 14px 28px;
+  border-radius: 100px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 20px 40px rgba(0,229,160,0.2); }
+
+.btn-ghost {
+  border: 1px solid var(--border);
+  color: var(--sub);
+  font-size: 14px;
+  padding: 14px 28px;
+  border-radius: 100px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+.hero-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 64px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface);
+  max-width: 540px;
+}
+.hero-stat {
+  flex: 1;
+  padding: 20px 24px;
+  border-right: 1px solid var(--border);
+}
+.hero-stat:last-child { border-right: none; }
+.hero-stat .num {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+}
+.hero-stat .label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* TICKER */
+.ticker {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+  overflow: hidden;
+  background: var(--surface);
+}
+.ticker-inner {
+  display: flex;
+  gap: 48px;
+  white-space: nowrap;
+  animation: ticker 30s linear infinite;
+  width: max-content;
+}
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.ticker-dot {
+  width: 4px; height: 4px;
+  background: var(--green);
+  border-radius: 50%;
+}
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* SECTION BASE */
+.section { padding: 100px 0; }
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--green);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: var(--green);
+}
+.section h2 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.section-sub {
+  color: var(--sub);
+  font-size: 16px;
+  max-width: 480px;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* WORK */
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.work-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s;
+  position: relative;
+}
+.work-card:hover {
+  border-color: rgba(0,229,160,0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+}
+.work-card iframe {
+  width: 100%;
+  height: 200px;
+  display: block;
+  border: none;
+}
+.work-card-body { padding: 18px; }
+.work-tag {
+  display: inline-block;
+  background: var(--green-dim);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.work-card h4 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.work-metrics {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.metric-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--sub);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+/* SERVICES */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.service-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--green), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.service-card:hover::before { opacity: 1; }
+.service-card:hover {
+  border-color: rgba(0,229,160,0.15);
+  transform: translateY(-2px);
+}
+.service-icon {
+  width: 40px; height: 40px;
+  background: var(--green-dim);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+.service-card h4 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+.service-card p {
+  color: var(--sub);
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 300;
+}
+.service-outcome {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* PRICING */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.pricing-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 28px;
+  transition: all 0.3s;
+  position: relative;
+}
+.pricing-card.featured {
+  border-color: rgba(0,229,160,0.3);
+  background: linear-gradient(135deg, rgba(0,229,160,0.05), var(--surface));
+}
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--green);
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.pricing-tier {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+.pricing-price {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  margin-bottom: 4px;
+}
+.pricing-price span {
+  font-size: 18px;
+  color: var(--sub);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.pricing-desc {
+  color: var(--sub);
+  font-size: 13px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.pricing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.pricing-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--sub);
+}
+.pricing-features li::before {
+  content: '✓';
+  color: var(--green);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.pricing-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.2s;
+  display: block;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: var(--surface2);
+}
+.pricing-btn:hover { border-color: rgba(255,255,255,0.2); }
+.pricing-btn.green {
+  background: var(--green);
+  color: #000;
+  border-color: transparent;
+}
+.pricing-btn.green:hover { background: #fff; }
+
+/* PROCESS */
+.process-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 56px;
+  position: relative;
+}
+.process-track::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), var(--green-dim), var(--border), transparent);
+}
+.process-step { text-align: center; padding: 0 16px; position: relative; }
+.step-num {
+  width: 56px; height: 56px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Clash Display', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+  margin: 0 auto 20px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s;
+}
+.process-step:hover .step-num {
+  background: var(--green-dim);
+  border-color: rgba(0,229,160,0.4);
+}
+.step-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.step-desc { font-size: 13px; color: var(--sub); line-height: 1.6; }
+
+/* TESTIMONIALS */
+.testi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.testi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s;
+}
+.testi-card:hover { border-color: rgba(0,229,160,0.15); transform: translateY(-3px); }
+.testi-stars { color: #FFB800; font-size: 14px; margin-bottom: 14px; }
+.testi-text {
+  font-size: 15px;
+  color: var(--sub);
+  line-height: 1.7;
+  font-weight: 300;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 40px; height: 40px;
+  background: var(--green-dim);
+  border: 1px solid rgba(0,229,160,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.testi-name { font-size: 14px; font-weight: 500; }
+.testi-role { font-size: 12px; color: var(--muted); }
+.testi-flag { font-size: 16px; margin-left: auto; }
+
+/* ABOUT */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.about-visual {
+  position: relative;
+}
+.about-img-wrap {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  aspect-ratio: 4/5;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.about-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(20%);
+}
+.about-float {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+.about-float .big {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+}
+.about-float .small { font-size: 12px; color: var(--muted); }
+.about-text h2 { margin-bottom: 20px; }
+.about-text p {
+  color: var(--sub);
+  font-size: 15px;
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 16px;
+}
+.tools-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.tool-chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--sub);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  transition: all 0.2s;
+}
+.tool-chip:hover { border-color: rgba(0,229,160,0.3); color: var(--green); }
+.global-row {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--sub);
+}
+.flag { font-size: 18px; }
+
+/* CONTACT */
+.contact-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 72px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.contact-wrap::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.contact-wrap h2 { font-size: clamp(32px, 5vw, 60px); margin-bottom: 12px; }
+.contact-wrap p { color: var(--sub); margin-bottom: 40px; font-size: 16px; font-weight: 300; }
+.contact-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.contact-info {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.contact-info span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.avail-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+}
+footer .inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+footer .copy { font-size: 13px; color: var(--muted); }
+footer .links { display: flex; gap: 20px; font-size: 13px; color: var(--muted); }
+footer .links a:hover { color: var(--green); }
+
+/* HERO TOOLS */
+.hero-tools {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* top label */
+.hero-tools-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+/* container for categories */
+.hero-tools-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* each category becomes a mini column */
+.tool-category {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 180px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+}
+
+/* category title */
+.category-title {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 4px;
+}
+
+/* tool item */
+.tool-logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--sub);
+  transition: all 0.2s;
+}
+
+.tool-logo:hover {
+  border-color: rgba(255,255,255,0.18);
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+/* TESTIMONIAL PHOTO */
+.testi-photo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+}
+.testi-photo-fallback {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--green-dim);
+  border: 1px solid rgba(0,229,160,0.25);
+  color: var(--green);
+  font-family: 'Clash Display', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* WORK TABS */
+.work-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+}
+.work-tab {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 20px;
+  border-radius: 100px;
+  transition: all 0.2s;
+  cursor: none;
+}
+.work-tab:hover {
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text);
+}
+.work-tab.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #000;
+  font-weight: 600;
+}
+
+/* INSTAGRAM BUTTON */
+.ig-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 100px;
+  transition: opacity 0.2s;
+}
+.ig-btn:hover { opacity: 0.85; }
+
+/* CARD FILTER ANIMATION */
+.work-card {
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.work-card.hidden {
+  display: none;
+}
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* SCROLL ANIMATIONS */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* RESPONSIVE */
+@media(max-width: 900px) {
+  .hero { padding: 60px 0; min-height: auto; }
+  .hero-stats { max-width: 100%; }
+  .work-grid, .services-grid, .pricing-grid, .testi-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .process-track { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .process-track::before { display: none; }
+  .contact-wrap { padding: 40px 24px; }
+  nav .nav-links { display: none; }
+  footer .inner { flex-direction: column; gap: 16px; text-align: center; }
+  body { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="container inner">
+    <div class="logo"><em>HE</em> Harshit Edits</div>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#about">About</a>
+    </div>
+    <a class="nav-cta" href="#contact">Book Free Call →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="container">
+    <div class="hero-content fade-up">
+      <div class="hero-badge">Available for new projects</div>
+      <h1>
+        Video Editing<br>
+        <span class="accent">That Grows</span><br>
+        <span class="line2">Your Audience.</span>
+      </h1>
+      <p class="hero-sub">
+        I help creators and brands turn raw footage into scroll-stopping content — engineered for retention, watch time, and real growth.
+      </p>
+      <div class="hero-actions">
+        <a href="#work" class="btn-primary">
+          ▶ Watch Showreel
+        </a>
+        <a href="#contact" class="btn-ghost">
+          Book a Free Call →
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num">3M+</div>
+          <div class="label">Total Views</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">150+</div>
+          <div class="label">Projects Done</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">5.0★</div>
+          <div class="label">Client Rating</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">48h</div>
+          <div class="label">Avg Delivery</div>
+        </div>
+      </div>
+
+      <!-- SOFTWARE LOGOS -->
+        <div class="hero-tools">
+          <div class="hero-tools-grid">
+            <!-- Editing -->
+            <div class="tool-category">
+              <div class="category-title">Editing</div>
+
+              <div class="tool-logo" title="Adobe Premiere Pro">
+                <img src="images/pr.webp"
+                  width="22" height="22" alt="Premiere Pro">
+                <span>Premiere Pro</span>
+              </div>
+
+              <div class="tool-logo" title="Adobe After Effects">
+                <img src="images/ae.webp"
+                  width="22" height="22" alt="After Effects">
+                <span>After Effects</span>
+              </div>
+
+              <div class="tool-logo" title="Adobe Photoshop">
+                <img src="images/ps.webp"
+                  width="22" height="22" alt="Photoshop">
+                <span>Photoshop</span>
+              </div>
+
+              <div class="tool-logo" title="CapCut">
+                <img src="images/capcut.webp"
+                  width="22" height="22" alt="CapCut">
+                <span>CapCut</span>
+              </div>
+            </div>
+
+            <!-- AI -->
+            <div class="tool-category">
+              <div class="category-title">AI Tools</div>
+
+              <div class="tool-logo" title="ChatGPT">
+                <img src="images/chatgpt.jpg" width="22" height="22" alt="ChatGPT">
+                <span>ChatGPT</span>
+              </div>
+
+              <div class="tool-logo" title="Gemini">
+                <img src="images/gemini.png" width="22" height="22" alt="Gemini">
+                <span>Gemini</span>
+              </div>
+
+              <div class="tool-logo" title="Meta AI">
+                <img src="images/meta.png" width="22" height="22" alt="Meta AI">
+                <span>Meta AI</span>
+              </div>
+
+              <div class="tool-logo" title="Midjourney">
+                <img src="images/midjourney.png" width="22" height="22" alt="Midjourney">
+                <span>Midjourney</span>
+              </div>
+
+              <div class="tool-logo" title="HeyGen">
+                <img src="images/heygen.webp" width="22" height="22" alt="HeyGen">
+                <span>HeyGen</span>
+              </div>
+            </div>
+
+            <!-- Voice -->
+            <div class="tool-category">
+              <div class="category-title">Voice</div>
+
+              <div class="tool-logo" title="ElevenLabs">
+                <img src="images/elevenlabs.webp" width="22" height="22" alt="ElevenLabs">
+                <span>ElevenLabs</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-dot"></span>RETENTION EDITING</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>HOOK OPTIMIZATION</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>SHORT FORM</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>LONG FORM</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>PODCAST CLIPS</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>BRAND VIDEOS</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>YOUTUBE</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>INSTAGRAM REELS</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>TIKTOK</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>PREMIERE PRO</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>AFTER EFFECTS</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><span class="ticker-dot"></span>RETENTION EDITING</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>HOOK OPTIMIZATION</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>SHORT FORM</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>LONG FORM</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>PODCAST CLIPS</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>BRAND VIDEOS</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>YOUTUBE</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>INSTAGRAM REELS</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>TIKTOK</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>PREMIERE PRO</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>AFTER EFFECTS</span>
+  </div>
+</div>
+
+<!-- WORK -->
+<section class="section" id="work">
+  <div class="container">
+    <div class="fade-up">
+      <div class="section-label">Featured Work</div>
+      <h2>Results, Not Just Edits.</h2>
+      <p class="section-sub">Every project is built around one goal — measurable growth for your channel or brand.</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="work-tabs fade-up" style="transition-delay:0.05s">
+      <button class="work-tab active" data-filter="all">All</button>
+      <button class="work-tab" data-filter="shorts">Shorts &amp; Reels</button>
+      <button class="work-tab" data-filter="podcast">Podcast</button>
+      <button class="work-tab" data-filter="motion">Motion Graphics</button>
+      <button class="work-tab" data-filter="longform">Long Form</button>
+    </div>
+
+    <div class="work-grid fade-up" style="transition-delay:0.1s">
+
+      <!-- 1. Businesses Need — Motion Graphics -->
+      <div class="work-card" data-category="motion">
+        <iframe src="https://www.youtube.com/embed/vBKX4-B23_s" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Motion Graphics</span>
+          <h4>Businesses Need</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">A motion graphics piece built for businesses — clean animations, bold typography, and a message designed to convert viewers into leads.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Motion Graphics</span>
+            <span class="metric-pill">Business</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=vBKX4-B23_s" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. Direct Hotel Booking — Motion Graphics -->
+      <div class="work-card" data-category="motion">
+        <iframe src="https://www.youtube.com/embed/BkxmJANsmXo" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Motion Graphics</span>
+          <h4>Direct Hotel Booking</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Animated explainer for a hotel direct booking campaign — smooth transitions, brand-aligned palette, and a clear call-to-action flow.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Motion Graphics</span>
+            <span class="metric-pill">Hospitality</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=BkxmJANsmXo" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 3. Heygen Avatar — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/6pIacnG6gpk" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>Heygen Avatar</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">AI avatar short edited for maximum hook impact — dynamic captions, tight pacing, and platform-native formatting for YouTube Shorts.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">YouTube Shorts</span>
+            <span class="metric-pill">AI Content</span>
+          </div>
+          <a href="https://youtube.com/shorts/6pIacnG6gpk" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 4. DD Ad — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/gLciWpy598Y" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>DD Ad</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Short-form ad edit with punchy cuts, high-energy pacing, and a hook-first structure optimised to capture attention in the first 2 seconds.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Ad Edit</span>
+            <span class="metric-pill">High Energy</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=gLciWpy598Y" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 5. JHB Promo — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/Gnq_yi1NJf0" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>JHB Promo</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Promo short with cinematic energy — colour grade, motion text, and sharp transitions designed to build brand awareness fast.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Promo</span>
+            <span class="metric-pill">YouTube Shorts</span>
+          </div>
+          <a href="https://youtube.com/shorts/Gnq_yi1NJf0" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 6. Masking and Duplication — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/uVz1IEXehIs" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>Masking and Duplication</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">VFX-forward short showcasing masking and duplication techniques — a strong creative demo that highlights technical editing depth.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">VFX</span>
+            <span class="metric-pill">Creative Edit</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=uVz1IEXehIs" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 7. Quiz Time — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/LGji7fPsZhM" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>Quiz Time</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Interactive quiz-format short designed to maximise comments and engagement — uses suspense pacing and animated text overlays to drive viewer interaction.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Engagement-first</span>
+            <span class="metric-pill">Quiz Format</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=LGji7fPsZhM" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 8. Digital Marketing — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/_bcXEt7Mu0Q" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>Digital Marketing</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Snappy digital marketing reel edited to hook decision-makers instantly — fast cuts, bold on-screen text, and a clear value message within the first 5 seconds.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Marketing</span>
+            <span class="metric-pill">B2B</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=_bcXEt7Mu0Q" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 9. Sleep is the New Diet — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/WeuluUP6KG8" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>Sleep is the New Diet</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Health and wellness reel with a curiosity-driven hook — edited to build instant interest and keep viewers watching through a compelling narrative arc.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Health &amp; Wellness</span>
+            <span class="metric-pill">Curiosity Hook</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=WeuluUP6KG8" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 10. Heal Your Body — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/_KI7rL9oCuo" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>Heal Your Body</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Motivational wellness short with warm colour grade, smooth cuts, and uplifting pacing — designed to drive saves and shares in the health niche.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Wellness</span>
+            <span class="metric-pill">High Save Rate</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=_KI7rL9oCuo" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 11. Spiritual Energy — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/ULkee40aOus" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>Spiritual Energy</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Atmospheric spiritual content edit — ambient pacing, soft transitions, and intentional text placement to create an immersive, high-retention viewing experience.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Spiritual</span>
+            <span class="metric-pill">Atmosphere</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=ULkee40aOus" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 12. Gym Friends — Podcast (has Instagram link too) -->
+      <div class="work-card" data-category="podcast">
+        <iframe src="https://www.youtube.com/embed/p185Odqj_P8" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Podcast</span>
+          <h4>Gym Friends</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Podcast clip edited for social — tight cuts, animated captions, and strategic b-roll to keep the conversation visually engaging across platforms.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Podcast Clip</span>
+            <span class="metric-pill">Multi-platform</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+            <a href="https://youtube.com/shorts/p185Odqj_P8" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              YouTube
+            </a>
+            <a href="https://www.instagram.com/reel/DR7Lt4VCNNT/?igsh=MXUxMjBnbDFjcHVwbw==" target="_blank" class="ig-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 13. Geo Political Impact — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/LkGJj4IzJB4" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>Geo Political Impact</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">News and current affairs short with authoritative pacing, clean lower thirds, and a strong informational hook — built for high-share educational content.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Educational</span>
+            <span class="metric-pill">News Format</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=LkGJj4IzJB4" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 14. The Hundred League — Shorts & Reels -->
+      <div class="work-card" data-category="shorts">
+        <iframe src="https://www.youtube.com/embed/jxMlDT9WbvE" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Shorts &amp; Reels</span>
+          <h4>The Hundred League</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Sports-style reel with high-energy edits, dynamic text, and beat-synced cuts — crafted to capture attention from fans and casual scrollers alike.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Sports</span>
+            <span class="metric-pill">High Energy</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=jxMlDT9WbvE" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 15. UI Animation — Motion Graphics -->
+      <div class="work-card" data-category="motion">
+        <iframe src="https://www.youtube.com/embed/C6DQbeJ9FRM" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Motion Graphics</span>
+          <h4>UI Animation</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Smooth UI walkthrough animation built in After Effects — fluid transitions, micro-interactions, and a polished product demo feel ideal for SaaS or app launches.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">After Effects</span>
+            <span class="metric-pill">UI/UX</span>
+            <span class="metric-pill">Product Demo</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=C6DQbeJ9FRM" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 16. Airplane Crash Mystery — Long Form -->
+      <div class="work-card" data-category="longform">
+        <iframe src="https://www.youtube.com/embed/epa9YE_NxnA" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Long Form</span>
+          <h4>Airplane Crash Mystery</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Full-length investigative YouTube video edited with suspense pacing, b-roll, and chapter structure — engineered to hold viewer attention from the hook to the very end.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Documentary Style</span>
+            <span class="metric-pill">Suspense Pacing</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=epa9YE_NxnA" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 17. Duplicated Myself — Long Form -->
+      <div class="work-card" data-category="longform">
+        <iframe src="https://www.youtube.com/embed/vt2RX7iQuw8" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Long Form</span>
+          <h4>Duplicated Myself</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Creative VFX long-form video featuring masking, duplication effects, and seamless compositing — a technical showcase that also tells a compelling story.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">VFX</span>
+            <span class="metric-pill">Creative</span>
+            <span class="metric-pill">Storytelling</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=vt2RX7iQuw8" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+      <!-- 18. Fantasygram Video — Long Form -->
+      <div class="work-card" data-category="longform">
+        <iframe src="https://www.youtube.com/embed/9OSSOM7I9NM" allowfullscreen></iframe>
+        <div class="work-card-body">
+          <span class="work-tag">Long Form</span>
+          <h4>Fantasygram Video</h4>
+          <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:10px 0;">Long-form brand video for Fantasygram — cinematic colour grade, smooth transitions, and a narrative arc that builds brand identity while keeping viewers watching till the end.</p>
+          <div class="work-metrics">
+            <span class="metric-pill">Brand Video</span>
+            <span class="metric-pill">Cinematic</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=9OSSOM7I9NM" target="_blank" class="ig-btn" style="background:linear-gradient(135deg,#FF0000,#CC0000);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            View on YouTube
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section" id="services" style="background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="fade-up">
+      <div class="section-label">Services</div>
+      <h2>What You Actually Get.</h2>
+      <p class="section-sub">Not just polished edits — strategy-driven content that performs.</p>
+    </div>
+    <div class="services-grid fade-up" style="transition-delay:0.1s">
+      <div class="service-card">
+        <div class="service-icon">✂️</div>
+        <h4>Retention Editing</h4>
+        <p>Every cut is engineered to maintain attention. I analyze your content's natural flow and build an edit that keeps viewers glued — no unnecessary pauses, no dead air.</p>
+        <div class="service-outcome">→ Avg. 20–40% lift in audience retention</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🎣</div>
+        <h4>Hook Optimization</h4>
+        <p>The first 3 seconds decide everything. I craft hooks that stop the scroll, create curiosity, and make people feel like they HAVE to keep watching.</p>
+        <div class="service-outcome">→ Higher click-through and open rates</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">📱</div>
+        <h4>Short-Form Clips</h4>
+        <p>Reels, TikToks, Shorts — I cut your long-form content into viral short clips optimized for each platform's algorithm and audience behavior.</p>
+        <div class="service-outcome">→ Repurpose 1 video into 5–10 clips</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🎙️</div>
+        <h4>Podcast & Long-Form</h4>
+        <p>Full-length YouTube videos, podcast episodes, and documentary-style content — paced for maximum watch time with professional motion graphics and captions.</p>
+        <div class="service-outcome">→ 60%+ average watch time</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="fade-up">
+      <div class="section-label">Pricing</div>
+      <h2>Simple, Transparent Rates.</h2>
+      <p class="section-sub">No surprises. All prices in USD. Revisions included in every plan.</p>
+    </div>
+    <div class="pricing-grid fade-up" style="transition-delay:0.1s">
+      <div class="pricing-card">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-price">$150 <span>/ video</span></div>
+        <p class="pricing-desc">For individual creators testing the waters. One polished video, fast delivery.</p>
+        <ul class="pricing-features">
+          <li>1 short or long-form video</li>
+          <li>2 rounds of revisions</li>
+          <li>48hr delivery</li>
+          <li>Captions included</li>
+          <li>Basic motion graphics</li>
+        </ul>
+        <a href="#contact" class="pricing-btn">Get Started →</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-tier">Growth</div>
+        <div class="pricing-price">$499 <span>/ month</span></div>
+        <p class="pricing-desc">For creators posting consistently. Ongoing partnership for sustained growth.</p>
+        <ul class="pricing-features">
+          <li>8 videos per month</li>
+          <li>Unlimited revisions</li>
+          <li>Priority 24hr delivery</li>
+          <li>Captions + thumbnails</li>
+          <li>Advanced motion graphics</li>
+          <li>Monthly performance review</li>
+        </ul>
+        <a href="#contact" class="pricing-btn green">Book Free Call →</a>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-tier">Agency / Brand</div>
+        <div class="pricing-price">Custom</div>
+        <p class="pricing-desc">For brands and agencies needing dedicated editing support at scale.</p>
+        <ul class="pricing-features">
+          <li>Unlimited videos</li>
+          <li>Dedicated editor</li>
+          <li>Same-day delivery</li>
+          <li>NDA available</li>
+          <li>White-label delivery</li>
+          <li>Slack / direct comms</li>
+        </ul>
+        <a href="#contact" class="pricing-btn">Let's Talk →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section" style="background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="fade-up" style="text-align:center">
+      <div class="section-label" style="justify-content:center">How It Works</div>
+      <h2>Ready in 4 Steps.</h2>
+    </div>
+    <div class="process-track fade-up" style="transition-delay:0.15s">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <div class="step-title">Free Call</div>
+        <div class="step-desc">15-min call to understand your goals, platform, and audience.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <div class="step-title">Send Footage</div>
+        <div class="step-desc">Share raw files via Google Drive, WeTransfer, or Dropbox.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <div class="step-title">Edit & Review</div>
+        <div class="step-desc">First draft delivered. Feedback loop via Loom or comments.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <div class="step-title">Final Delivery</div>
+        <div class="step-desc">Export-ready files in your preferred format, platform-optimized.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonials">
+  <div class="container">
+    <div class="fade-up">
+      <div class="section-label">Client Results</div>
+      <h2>Don't Take My Word For It.</h2>
+      <p class="section-sub">Real clients. Real numbers. Real growth.</p>
+    </div>
+    <div class="testi-grid fade-up" style="transition-delay:0.1s">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Great work, Harshit! The green screen removal was smooth, and the background selection was spot-on. Most importantly, you completed it within the given timeframe. Overall, a great experience working with you on this edit."</p>
+        <div class="testi-author">
+          <!-- CLIENT PHOTO: Replace src below with your client's actual photo URL -->
+          <img src="images\akash.webp" alt="Akash Bhagava" class="testi-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+          <div class="testi-photo-fallback">M</div>
+          <div>
+            <div class="testi-name">Akash Bhagava</div>
+            <div class="testi-role">Fantasygram Youtube Channel · 312K subs</div>
+          </div>
+          <span class="testi-flag">🇮🇳</span>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Great edit! The background and face enhancement were impressive, and the relevant footage added a nice touch. The video recieved over 15k impressions -- overall, an excellent job Harshit!"</p>
+        <div class="testi-author">
+          <!-- CLIENT PHOTO: Replace src below with your client's actual photo URL -->
+          <img src="images\aditi.webp" alt="Aditi" class="testi-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+          <div class="testi-photo-fallback">S</div>
+          <div>
+            <div class="testi-name">Aditi Saxena</div>
+            <div class="testi-role">Content Creator · Agency Client</div>
+          </div>
+          <span class="testi-flag">🇮🇳</span>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Your cuts were thoughtful, well-paced and showed a strong understanding of the concept. You grasp direction quickly and bring ideas to life effectively. Just a little refinement in the SFX part will make your edits even more polished."</p>
+        <div class="testi-author">
+          <!-- CLIENT PHOTO: Replace src below with your client's actual photo URL -->
+          <img src="images\suheb.webp" alt="Suheb Ahmad" class="testi-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+          <div class="testi-photo-fallback">J</div>
+          <div>
+            <div class="testi-name">Suheb Ahmad</div>
+            <div class="testi-role">Hardly Hectic YouTube Channel</div>
+          </div>
+          <span class="testi-flag">🇦🇪</span>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"I think you made compelling & engaging videos. Plus your service of delivery was quick. The only thing was same props & same background music but I think that can be taken care of. Overall it was very nice."</p>
+        <div class="testi-author">
+          <!-- CLIENT PHOTO: Replace src below with your client's actual photo URL -->
+          <img src="images\pratibha.webp" alt="Pratibha" class="testi-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+          <div class="testi-photo-fallback">J</div>
+          <div>
+            <div class="testi-name">Pratibha</div>
+            <div class="testi-role">Pratibha Mindspace Instagram </div>
+          </div>
+          <span class="testi-flag">🇮🇳</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about" style="border-top:1px solid var(--border)">
+  <div class="container">
+    <div class="about-grid fade-up">
+      <div class="about-visual">
+        <div class="about-img-wrap">
+          <img src="images\harshit.png" alt="Harshit — Video Editor" />
+        </div>
+        <div class="about-float">
+          <div class="big">4+</div>
+          <div class="small">Years editing</div>
+        </div>
+      </div>
+      <div class="about-text">
+        <div class="section-label">About</div>
+        <h2>I Edit With One Goal — Your Growth.</h2>
+        <p>
+          I'm Harshit, a video editor based in India working with creators and brands across the US, UK, India, UAE and Australia. I don't just cut footage — I study your audience, reverse-engineer what keeps them watching, and build edits that get results.
+        </p>
+        <p>
+          From 0-view channels to creators with millions of subscribers, I've helped clients grow across YouTube, Instagram, TikTok, and paid ad campaigns.
+        </p>
+        <div class="global-row">
+          <span>Working with clients in</span>
+          <span class="flag">🇺🇸</span>
+          <span class="flag">🇦🇪</span>
+          <span class="flag">🇦🇺</span>
+          <span class="flag">🇨🇦</span>
+          <span class="flag">🇮🇳</span>
+          <span style="font-size:13px">& more</span>
+        </div>
+        <div class="tools-row">
+          <span class="tool-chip">Premiere Pro</span>
+          <span class="tool-chip">After Effects</span>
+          <span class="tool-chip">DaVinci Resolve</span>
+          <span class="tool-chip">Photoshop</span>
+          <span class="tool-chip">CapCut</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="contact-wrap fade-up">
+      <div class="section-label" style="justify-content:center">Get In Touch</div>
+      <h2>Let's Build Something<br><span style="color:var(--green)">That Grows.</span></h2>
+      <p>Book a free 15-min call. No pitch, no pressure — just a conversation about your content goals.</p>
+      <div class="contact-actions">
+        <a href="https://calendly.com/" target="_blank" class="btn-primary">📅 Book Free Call</a>
+        <a href="mailto:harshit@harshitedits.com" class="btn-ghost">✉️ Send Email</a>
+        <a href="https://wa.me/919999999999" target="_blank" class="btn-ghost">💬 WhatsApp</a>
+      </div>
+      <div class="contact-info">
+        <span><span class="avail-dot"></span> Available Now</span>
+        <span>⏱ Responds within 12hrs</span>
+        <span>🌏 IST · UTC+5:30</span>
+        <span>💵 Rates in USD</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container inner">
+    <div class="copy">© 2025 Harshit Edits · India · Built to convert</div>
+    <div class="links">
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX;
+  my = e.clientY;
+  cursor.style.opacity = '1';
+  ring.style.opacity = '1';
+});
+
+// Keep cursor visible on all pointer events
+document.addEventListener('pointerdown', e => {
+  mx = e.clientX;
+  my = e.clientY;
+  cursor.style.opacity = '1';
+  ring.style.opacity = '1';
+});
+document.addEventListener('pointerup', e => {
+  mx = e.clientX;
+  my = e.clientY;
+  cursor.style.opacity = '1';
+  ring.style.opacity = '1';
+});
+document.addEventListener('click', e => {
+  mx = e.clientX;
+  my = e.clientY;
+  cursor.style.opacity = '1';
+  ring.style.opacity = '1';
+});
+
+// Keep cursor visible when over iframes by tracking mouse leaving iframe area
+document.querySelectorAll('iframe').forEach(iframe => {
+  iframe.style.pointerEvents = 'none'; // allow cursor to stay visible
+  iframe.parentElement.addEventListener('click', () => {
+    iframe.style.pointerEvents = 'auto';
+    setTimeout(() => { iframe.style.pointerEvents = 'none'; }, 3000);
+  });
+});
+
+(function loop() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cursor.style.transform = `translate(${mx-5}px, ${my-5}px)`;
+  ring.style.transform = `translate(${rx-18}px, ${ry-18}px)`;
+  requestAnimationFrame(loop);
+})();
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform += ' scale(1.5)';
+    ring.style.width = '50px';
+    ring.style.height = '50px';
+    ring.style.marginLeft = '-7px';
+    ring.style.marginTop = '-7px';
+    ring.style.borderColor = 'rgba(0,229,160,0.7)';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.width = '36px';
+    ring.style.height = '36px';
+    ring.style.marginLeft = '0';
+    ring.style.marginTop = '0';
+    ring.style.borderColor = 'rgba(0,229,160,0.4)';
+  });
+});
+
+// Scroll animations
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+// Work tab filtering
+const tabs = document.querySelectorAll('.work-tab');
+const cards = document.querySelectorAll('.work-card');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    // update active tab
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    const filter = tab.dataset.filter;
+
+    cards.forEach(card => {
+      if (filter === 'all' || card.dataset.category === filter) {
+        card.classList.remove('hidden');
+        card.style.animation = 'fadeInCard 0.35s ease forwards';
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
