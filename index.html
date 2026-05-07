@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Harshit Edits - Video Editor for Creators & Brands</title>
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -57,6 +59,35 @@ nav .inner { display: flex; justify-content: space-between; align-items: center;
 .nav-links a:hover { color: var(--text); }
 .nav-cta { background: var(--green); color: #000; font-weight: 600; font-size: 13px; padding: 10px 20px; border-radius: 100px; transition: all 0.2s; letter-spacing: 0.2px; }
 .nav-cta:hover { background: #fff; transform: translateY(-1px); }
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-icon img {
+  width: 40px;
+  height: auto;
+  display: block;
+}
+
+.logo span {
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
 
 .hero { min-height: auto; display: flex; align-items: center; position: relative; overflow: hidden; padding: 60px 0 50px; }
 .hero::before {
@@ -337,7 +368,12 @@ footer .links a:hover { color: var(--green); }
 
 <nav>
   <div class="container inner">
-    <div class="logo"><em>HE</em> Harshit Edits</div>
+    <div class="logo"> 
+      <div class="logo-icon">
+         <img src="images/hcbg.png" alt="Harshit Edits Logo">
+       </div> 
+         <span>Harshit Edits</span> 
+    </div>
     <div class="nav-links">
       <a href="#work">Work</a>
       <a href="#services">Services</a>
